@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="zblibrary.demo"
+    package="zblibrary.xscan"
     android:versionCode="28"
     android:versionName="@string/app_version">
     <!-- 需要的权限和功能 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< -->
@@ -50,7 +50,7 @@
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="zblibrary.demo.fileProvider"
+            android:authorities="zblibrary.xscan.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -92,7 +92,13 @@
         <activity
             android:name=".activity.QRCodeActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden" /> <!-- Demo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< -->
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name=".activity.ProofListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Window"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <!-- Demo <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< -->
         <activity
             android:name=".DEMO.DemoMainActivity"
             android:screenOrientation="portrait"

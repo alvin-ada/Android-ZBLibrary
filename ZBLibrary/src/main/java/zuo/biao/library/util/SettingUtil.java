@@ -229,15 +229,15 @@ public final class SettingUtil {
 	/**
 	 * TODO 改为你的正式服务器地址
 	 */
-	public static final String URL_SERVER_ADDRESS_NORMAL_HTTP = "http://www.baidu.com";//正式服务器
+	public static final String URL_SERVER_ADDRESS_NORMAL_HTTP = "http://47.96.10.98:9700";//正式服务器
 	/**
 	 * TODO 改为你的正式服务器地址
 	 */
-	public static final String URL_SERVER_ADDRESS_NORMAL_HTTPS = "https://www.baidu.com";//正式服务器
+	public static final String URL_SERVER_ADDRESS_NORMAL_HTTPS = "http://47.96.10.98:9700";//正式服务器
 	/**
 	 * TODO 改为你的测试服务器地址,如果有的话
 	 */
-	public static final String URL_SERVER_ADDRESS_TEST = "https://github.com/TommyLemon/Android-ZBLibrary";//测试服务器
+	public static final String URL_SERVER_ADDRESS_TEST = "http://47.96.10.98:9700";//测试服务器
 
 	/**获取当前服务器地址
 	 * isHttps = false
