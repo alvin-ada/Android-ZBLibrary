@@ -21,7 +21,7 @@ import zuo.biao.library.util.StringUtil;
 import android.util.Log;
 
 /**Application
- * @author Lemon
+ * @author alvin
  */
 public class DemoApplication extends BaseApplication {
 	private static final String TAG = "DemoApplication";

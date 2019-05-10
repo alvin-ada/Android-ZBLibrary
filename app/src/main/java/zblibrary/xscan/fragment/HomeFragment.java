@@ -23,7 +23,9 @@ import android.widget.ImageView;
 
 import zblibrary.xscan.R;
 import zblibrary.xscan.activity.AboutActivity;
+import zblibrary.xscan.activity.ProofListActivity;
 import zblibrary.xscan.activity.SettingActivity;
+import zblibrary.xscan.camera.activity.CameraActivity;
 import zuo.biao.library.base.BaseFragment;
 import zuo.biao.library.ui.AlertDialog;
 import zuo.biao.library.ui.AlertDialog.OnDialogButtonClickListener;
@@ -64,11 +66,9 @@ public class HomeFragment extends BaseFragment implements OnClickListener {
 
 	//UI显示区(操作UI，但不存在数据获取或处理代码，也不存在事件监听代码)<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-	private ImageView ivSettingHead;
 	@Override
 	public void initView() {//必须调用
 
-		ivSettingHead = findView(R.id.ivHome);
 	}
 
 
@@ -92,14 +92,14 @@ public class HomeFragment extends BaseFragment implements OnClickListener {
 	@Override
 	public void initEvent() {//必须调用
 
-		ivSettingHead.setOnClickListener(this);
+		findView(R.id.tvScan).setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {//直接调用不会显示v被点击效果
 		switch (v.getId()) {
-			case R.id.ivSettingHead:
-				showShortToast("onClick  ivSettingHead");
+			case R.id.tvScan:
+				toActivity(CameraActivity.createIntent(context));
 				break;
 			default:
 				break;
