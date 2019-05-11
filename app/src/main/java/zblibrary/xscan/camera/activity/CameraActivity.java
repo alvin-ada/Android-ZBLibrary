@@ -1,16 +1,21 @@
 package zblibrary.xscan.camera.activity;
 
 import zblibrary.xscan.R;
+import zblibrary.xscan.activity.MainTabActivity;
 import zblibrary.xscan.activity.ProofListActivity;
 import zblibrary.xscan.camera.camera.CameraInterface;
 import zblibrary.xscan.camera.camera.CameraInterface.CamOpenOverCallback;
+import zblibrary.xscan.camera.camera.OnPictureTakenListener;
 import zblibrary.xscan.camera.camera.preview.CameraSurfaceView;
 import zblibrary.xscan.camera.ui.MaskView;
 import zblibrary.xscan.camera.util.DisplayUtil;
+import zblibrary.xscan.util.HttpRequest;
+import zuo.biao.library.interfaces.OnHttpResponseListener;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -22,7 +27,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageButton;
 
-public class CameraActivity extends Activity implements CamOpenOverCallback {
+import java.io.File;
+
+public class CameraActivity extends Activity implements CamOpenOverCallback, OnPictureTakenListener {
     private static final String TAG = "YanZi";
     CameraSurfaceView surfaceView = null;
     ImageButton shutterBtn;
@@ -31,6 +38,7 @@ public class CameraActivity extends Activity implements CamOpenOverCallback {
     int DST_CENTER_RECT_WIDTH = 200; //dip
     int DST_CENTER_RECT_HEIGHT = 200;//dip
     Point rectPictureSize = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +57,9 @@ public class CameraActivity extends Activity implements CamOpenOverCallback {
         shutterBtn.setOnClickListener(new BtnListeners());
     }
 
-    /**启动这个Activity的Intent
+    /**
+     * 启动这个Activity的Intent
+     *
      * @param context
      * @param range
      * @return
@@ -65,15 +75,15 @@ public class CameraActivity extends Activity implements CamOpenOverCallback {
         return true;
     }
 
-    private void initUI(){
-        surfaceView = (CameraSurfaceView)findViewById(R.id.camera_surfaceview);
-        shutterBtn = (ImageButton)findViewById(R.id.btn_shutter);
-        maskView = (MaskView)findViewById(R.id.view_mask);
+    private void initUI() {
+        surfaceView = (CameraSurfaceView) findViewById(R.id.camera_surfaceview);
+        shutterBtn = (ImageButton) findViewById(R.id.btn_shutter);
+        maskView = (MaskView) findViewById(R.id.view_mask);
 
         surfaceView.getSurfaceHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                Thread openThread = new Thread(){
+                Thread openThread = new Thread() {
                     @Override
                     public void run() {
                         // TODO Auto-generated method stub
@@ -94,7 +104,8 @@ public class CameraActivity extends Activity implements CamOpenOverCallback {
             }
         });
     }
-    private void initViewParams(){
+
+    private void initViewParams() {
         LayoutParams params = surfaceView.getLayoutParams();
         Point p = DisplayUtil.getScreenMetrics(this);
         params.width = p.x;
@@ -106,58 +117,83 @@ public class CameraActivity extends Activity implements CamOpenOverCallback {
 
         LayoutParams p2 = shutterBtn.getLayoutParams();
         p2.width = DisplayUtil.dip2px(this, 80);
-        p2.height = DisplayUtil.dip2px(this, 80);;
+        p2.height = DisplayUtil.dip2px(this, 80);
+        ;
         shutterBtn.setLayoutParams(p2);
 
     }
 
     @Override
     public void cameraHasOpened() {
-        // TODO Auto-generated method stub
         SurfaceHolder holder = surfaceView.getSurfaceHolder();
         CameraInterface.getInstance().doStartPreview(holder, previewRate);
-        if(maskView != null){
+        if (maskView != null) {
             Rect screenCenterRect = createCenterScreenRect(DisplayUtil.dip2px(this, DST_CENTER_RECT_WIDTH)
-                    ,DisplayUtil.dip2px(this, DST_CENTER_RECT_HEIGHT));
+                    , DisplayUtil.dip2px(this, DST_CENTER_RECT_HEIGHT));
             maskView.setCenterRect(screenCenterRect);
         }
     }
-    private class BtnListeners implements OnClickListener{
+
+    @Override
+    public void onPicktureTaken(File file, Bitmap bitmap) {
+        try {
+            //send bitmap to proof
+            HttpRequest.uploadImage(file, 1, new OnHttpResponseListener() {
+                @Override
+                public void onHttpResponse(int requestCode, String resultJson, Exception e) {
+                    Log.e(TAG, "upload: " + resultJson);
+                }
+            });
+
+            CameraInterface.getInstance().doStopCamera();
+            CameraInterface.getInstance().removeOnPictureTakenListener();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            finish();
+            startActivity(MainTabActivity.createIntent(this.getApplicationContext()));
+        }
+    }
+
+    private class BtnListeners implements OnClickListener {
 
         @Override
         public void onClick(View v) {
             // TODO Auto-generated method stub
-            switch(v.getId()){
+            switch (v.getId()) {
                 case R.id.btn_shutter:
-                    if(rectPictureSize == null){
+                    if (rectPictureSize == null) {
                         rectPictureSize = createCenterPictureRect(DisplayUtil.dip2px(CameraActivity.this, DST_CENTER_RECT_WIDTH)
-                                ,DisplayUtil.dip2px(CameraActivity.this, DST_CENTER_RECT_HEIGHT));
+                                , DisplayUtil.dip2px(CameraActivity.this, DST_CENTER_RECT_HEIGHT));
                     }
+
+                    CameraInterface.getInstance().setOnPictureTakenListener(CameraActivity.this::onPicktureTaken);
                     CameraInterface.getInstance().doTakePicture(rectPictureSize.x, rectPictureSize.y);
                     break;
-                default:break;
+                default:
+                    break;
             }
         }
 
     }
 
-    private Point createCenterPictureRect(int w, int h){
+    private Point createCenterPictureRect(int w, int h) {
 
         int wScreen = DisplayUtil.getScreenMetrics(this).x;
         int hScreen = DisplayUtil.getScreenMetrics(this).y;
         int wSavePicture = CameraInterface.getInstance().doGetPrictureSize().y;
         int hSavePicture = CameraInterface.getInstance().doGetPrictureSize().x;
-        float wRate = (float)(wSavePicture) / (float)(wScreen);
-        float hRate = (float)(hSavePicture) / (float)(hScreen);
+        float wRate = (float) (wSavePicture) / (float) (wScreen);
+        float hRate = (float) (hSavePicture) / (float) (hScreen);
         float rate = (wRate <= hRate) ? wRate : hRate;
 
-        int wRectPicture = (int)( w * wRate);
-        int hRectPicture = (int)( h * hRate);
+        int wRectPicture = (int) (w * wRate);
+        int hRectPicture = (int) (h * hRate);
         return new Point(wRectPicture, hRectPicture);
 
     }
 
-    private Rect createCenterScreenRect(int w, int h){
+    private Rect createCenterScreenRect(int w, int h) {
         int x1 = DisplayUtil.getScreenMetrics(this).x / 2 - w / 2;
         int y1 = DisplayUtil.getScreenMetrics(this).y / 2 - h / 2;
         int x2 = x1 + w;

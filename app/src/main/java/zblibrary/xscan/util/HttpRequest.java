@@ -14,6 +14,7 @@ limitations under the License.*/
 
 package zblibrary.xscan.util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,11 +55,12 @@ public class HttpRequest {
 	public static final String USER_ID = "userId";
 	public static final String CURRENT_USER_ID = "currentUserId";
 
-	public static final String PHONE = "phone";
-	public static final String PASSWORD = "password";
+	public static final String PHONE = "username";
+	public static final String CODE = "code";
 
 	public static final String UID = "uid";
 	public static final String TOKEN = "token";
+	public static final String NICKNAME = "nickname";
 
 
 	/**翻译，根据有道翻译API文档请求
@@ -83,19 +85,16 @@ public class HttpRequest {
 
 
 	//account<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
-	/**注册
+	/**获取验证码
 	 * @param phone
-	 * @param password
 	 * @param listener
 	 */
-	public static void register(final String phone, final String password,
-			final int requestCode, final OnHttpResponseListener listener) {
+	public static void getCode(final String phone,
+							 final int requestCode, final OnHttpResponseListener listener) {
 		Map<String, Object> request = new HashMap<>();
 		request.put(PHONE, phone);
-		request.put(PASSWORD, MD5Util.MD5(password));
 
-		HttpManager.getInstance().post(request, URL_BASE + "/register", requestCode, listener);
+		HttpManager.getInstance().post(request, URL_BASE + "/api/user/get-code", requestCode, listener);
 	}
 
 	/**登陆
@@ -107,9 +106,9 @@ public class HttpRequest {
 			final int requestCode, final OnHttpResponseListener listener) {
 		Map<String, Object> request = new HashMap<>();
 		request.put(PHONE, phone);
-		request.put(PASSWORD, MD5Util.MD5(password));
+		request.put(CODE, password);
 
-		HttpManager.getInstance().post(request, URL_BASE + "/login", requestCode, listener);
+		HttpManager.getInstance().post(request, URL_BASE + "/api/user/login", requestCode, listener);
 	}
 
 	//account>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -163,8 +162,34 @@ public class HttpRequest {
 		HttpManager.getInstance().get(request, URL_BASE + "/api/user-code/list", requestCode, listener);
 	}
 
+	/**获取用户
+	 * @param requestCode
+	 * @param listener
+	 */
+	public static void setNickname(final String nickname, final int requestCode, final OnHttpResponseListener listener) {
+		Map<String, Object> request = new HashMap<>();
+		request.put(UID, DemoApplication.getInstance().getCurrentUser().getUid());
+		request.put(TOKEN, DemoApplication.getInstance().getCurrentUser().getToken());
+		request.put(NICKNAME, nickname);
+
+		HttpManager.getInstance().post(request, URL_BASE + "/api/user/login", requestCode, listener);
+	}
+
 
 	//user>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+	// Image upload
+	public static void uploadImage(final File file,
+								   final int requestCode, final OnHttpResponseListener listener) {
+		Map<String, Object> request = new HashMap<>();
+		request.put(UID, DemoApplication.getInstance().getCurrentUser().getUid());
+		request.put(TOKEN, DemoApplication.getInstance().getCurrentUser().getToken());
+
+		HttpManager.getInstance().postFile(request, file, URL_BASE + "/api/user-code/check", requestCode, listener);
+	}
 
 
 	//示例代码>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

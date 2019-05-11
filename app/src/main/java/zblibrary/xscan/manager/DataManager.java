@@ -84,6 +84,16 @@ public class DataManager {
 		User user = getCurrentUser();
 		return user == null ? "" : user.getPhone();
 	}
+
+	/**获取当前用户的昵称
+	 * @param context
+	 * @return
+	 */
+	public String getCurrentUserNickname() {
+		User user = getCurrentUser();
+		return user == null ? "" : user.getNickname();
+	}
+
 	/**获取当前用户
 	 * @param context
 	 * @return
@@ -207,6 +217,20 @@ public class DataManager {
 			user = new User();
 		}
 		user.setName(name);
+		saveUser(user);
+	}
+
+
+	/**设置当前用户昵称
+	 * @param context
+	 * @param name
+	 */
+	public void setCurrentUserNickname(String name) {
+		User user = getCurrentUser();
+		if (user == null) {
+			user = new User();
+		}
+		user.setNickname(name);
 		saveUser(user);
 	}
 

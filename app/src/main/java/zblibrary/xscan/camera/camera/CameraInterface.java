@@ -1,5 +1,6 @@
 package zblibrary.xscan.camera.camera;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -75,7 +76,7 @@ public class CameraInterface {
 
 
     }
-    /**ʹ��TextureViewԤ��Camera
+    /**
      * @param surface
      * @param previewRate
      */
@@ -122,7 +123,6 @@ public class CameraInterface {
     int DST_RECT_WIDTH, DST_RECT_HEIGHT;
     public void doTakePicture(int w, int h){
         if(isPreviewing && (mCamera != null)){
-            Log.i(TAG, "�������ճߴ�:width = " + w + " h = " + h);
             DST_RECT_WIDTH = w;
             DST_RECT_HEIGHT = h;
             mCamera.takePicture(mShutterCallback, null, mRectJpegPictureCallback);
@@ -133,18 +133,23 @@ public class CameraInterface {
         return new Point(s.width, s.height);
     }
 
+    public OnPictureTakenListener onPictureTakenListener = null;
 
+    public void setOnPictureTakenListener(OnPictureTakenListener listener) {
+        onPictureTakenListener = listener;
+    }
 
-
+    public void removeOnPictureTakenListener() {
+        onPictureTakenListener = null;
+    }
 
     private void initCamera(float previewRate){
         if(mCamera != null){
 
             mParams = mCamera.getParameters();
-            mParams.setPictureFormat(PixelFormat.JPEG);//�������պ�洢��ͼƬ��ʽ
+            mParams.setPictureFormat(PixelFormat.JPEG);
 //			CamParaUtil.getInstance().printSupportPictureSize(mParams);
 //			CamParaUtil.getInstance().printSupportPreviewSize(mParams);
-            //����PreviewSize��PictureSize
             Size pictureSize = CamParaUtil.getInstance().getPropPictureSize(
                     mParams.getSupportedPictureSizes(),previewRate, 800);
             mParams.setPictureSize(pictureSize.width, pictureSize.height);
@@ -177,9 +182,7 @@ public class CameraInterface {
 
 
 
-    /*Ϊ��ʵ�����յĿ������������ձ�����Ƭ��Ҫ���������ص�����*/
     ShutterCallback mShutterCallback = new ShutterCallback()
-            //���Ű��µĻص������������ǿ����������Ʋ��š����ꡱ��֮��Ĳ�����Ĭ�ϵľ������ꡣ
     {
         public void onShutter() {
             // TODO Auto-generated method stub
@@ -196,62 +199,55 @@ public class CameraInterface {
 
         }
     };
-    /**
-     * ��������
-     */
+
     PictureCallback mJpegPictureCallback = new PictureCallback()
-            //��jpegͼ�����ݵĻص�,����Ҫ��һ���ص�
     {
         public void onPictureTaken(byte[] data, Camera camera) {
             // TODO Auto-generated method stub
             Log.i(TAG, "myJpegCallback:onPictureTaken...");
             Bitmap b = null;
             if(null != data){
-                b = BitmapFactory.decodeByteArray(data, 0, data.length);//data���ֽ����ݣ����������λͼ
+                b = BitmapFactory.decodeByteArray(data, 0, data.length);
                 mCamera.stopPreview();
                 isPreviewing = false;
             }
-            //����ͼƬ��sdcard
+
             if(null != b)
             {
-                //����FOCUS_MODE_CONTINUOUS_VIDEO)֮��myParam.set("rotation", 90)ʧЧ��
-                //ͼƬ��Ȼ������ת�ˣ�������Ҫ��ת��
                 Bitmap rotaBitmap = ImageUtil.getRotateBitmap(b, 90.0f);
                 FileUtil.saveBitmap(rotaBitmap);
             }
-            //�ٴν���Ԥ��
+
             mCamera.startPreview();
             isPreviewing = true;
         }
     };
 
-    /**
-     * ����ָ�������Rect
-     */
     PictureCallback mRectJpegPictureCallback = new PictureCallback()
-            //��jpegͼ�����ݵĻص�,����Ҫ��һ���ص�
     {
         public void onPictureTaken(byte[] data, Camera camera) {
             // TODO Auto-generated method stub
             Log.i(TAG, "myJpegCallback:onPictureTaken...");
             Bitmap b = null;
             if(null != data){
-                b = BitmapFactory.decodeByteArray(data, 0, data.length);//data���ֽ����ݣ����������λͼ
+                b = BitmapFactory.decodeByteArray(data, 0, data.length);
                 mCamera.stopPreview();
                 isPreviewing = false;
             }
-            //����ͼƬ��sdcard
             if(null != b)
             {
-                //����FOCUS_MODE_CONTINUOUS_VIDEO)֮��myParam.set("rotation", 90)ʧЧ��
-                //ͼƬ��Ȼ������ת�ˣ�������Ҫ��ת��
                 Bitmap rotaBitmap = ImageUtil.getRotateBitmap(b, 90.0f);
                 int x = rotaBitmap.getWidth()/2 - DST_RECT_WIDTH/2;
                 int y = rotaBitmap.getHeight()/2 - DST_RECT_HEIGHT/2;
                 Log.i(TAG, "rotaBitmap.getWidth() = " + rotaBitmap.getWidth()
                         + " rotaBitmap.getHeight() = " + rotaBitmap.getHeight());
                 Bitmap rectBitmap = Bitmap.createBitmap(rotaBitmap, x, y, DST_RECT_WIDTH, DST_RECT_HEIGHT);
-                FileUtil.saveBitmap(rectBitmap);
+                String filePath = FileUtil.saveBitmap(rectBitmap);
+
+                if (null != onPictureTakenListener) {
+                    onPictureTakenListener.onPicktureTaken(new File(filePath), rectBitmap);
+                }
+
                 if(rotaBitmap.isRecycled()){
                     rotaBitmap.recycle();
                     rotaBitmap = null;
@@ -261,7 +257,7 @@ public class CameraInterface {
                     rectBitmap = null;
                 }
             }
-            //�ٴν���Ԥ��
+
             mCamera.startPreview();
             isPreviewing = true;
             if(!b.isRecycled()){

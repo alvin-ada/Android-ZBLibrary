@@ -31,8 +31,8 @@ public class Proof extends BaseModel {
     public final static int RESULT_FALSE = 2;
 
 
-    private int result; //0.尚未结果, 1.真. 2.假
-    private long create_at; //"created_at": 1557021811
+    public int result; //0.尚未结果, 1.真. 2.假
+    public long create_at; //"created_at": 1557021811
 
 
     /**

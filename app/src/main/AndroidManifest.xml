@@ -106,7 +106,10 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
             android:name=".camera.activity.CameraActivity"
-            android:label="@string/camera_desc"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"/>
+        <activity
+            android:name=".activity.LoginActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar.Fullscreen"
             android:screenOrientation="portrait">
         </activity>

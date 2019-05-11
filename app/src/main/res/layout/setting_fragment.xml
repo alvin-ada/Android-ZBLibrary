@@ -33,7 +33,7 @@
                     android:text="昵称" />
 
                 <TextView
-                    android:id="@+id/tvName"
+                    android:id="@+id/tvNickName"
                     android:layout_height="match_parent"
                     android:layout_width="wrap_content"
                     style="@style/content_item_rt_tv"

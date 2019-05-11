@@ -28,10 +28,15 @@ import zblibrary.xscan.R;
 import zblibrary.xscan.activity.AboutActivity;
 import zblibrary.xscan.activity.ProofListActivity;
 import zblibrary.xscan.activity.SettingActivity;
+import zblibrary.xscan.manager.DataManager;
+import zblibrary.xscan.model.User;
+import zblibrary.xscan.util.HttpRequest;
 import zuo.biao.library.base.BaseFragment;
+import zuo.biao.library.interfaces.OnHttpResponseListener;
 import zuo.biao.library.ui.AlertDialog;
 import zuo.biao.library.ui.AlertDialog.OnDialogButtonClickListener;
 import zuo.biao.library.ui.EditTextInfoActivity;
+import zuo.biao.library.util.Log;
 import zuo.biao.library.util.StringUtil;
 
 /**设置fragment
@@ -41,6 +46,7 @@ import zuo.biao.library.util.StringUtil;
 public class SettingFragment extends BaseFragment implements OnClickListener, OnDialogButtonClickListener {
 //	private static final String TAG = "SettingFragment";
 
+	private final String TAG = "SettingFragment";
 
 	//与Activity通信<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -77,13 +83,15 @@ public class SettingFragment extends BaseFragment implements OnClickListener, On
 
 	private ImageView ivSettingHead;
 	private RelativeLayout mNameRL;
-	private TextView mNameTV;
+	private TextView mNickNameTV;
+	private TextView mPhoneTV;
 	@Override
 	public void initView() {//必须调用
 
 		ivSettingHead = findView(R.id.ivSettingHead);
 		mNameRL = findView(R.id.llPersonName);
-		mNameTV = findView(R.id.tvName);
+		mNickNameTV = findView(R.id.tvNickName);
+		mPhoneTV = findView(R.id.tvPhone);
 	}
 
 
@@ -104,9 +112,9 @@ public class SettingFragment extends BaseFragment implements OnClickListener, On
 
 	@Override
 	public void initData() {//必须调用
-
+		mNickNameTV.setText(DataManager.getInstance().getCurrentUserNickname());
+		mPhoneTV.setText(DataManager.getInstance().getCurrentUserPhone());
 	}
-
 
 	private void logout() {
 		context.finish();
@@ -157,7 +165,7 @@ public class SettingFragment extends BaseFragment implements OnClickListener, On
 //				showShortToast("onClick  ivSettingHead");
 				break;
 			case R.id.llPersonName:
-				toActivity(EditTextInfoActivity.createIntent(context, EditTextInfoActivity.TYPE_NICK, "设置昵称", StringUtil.getTrimedString(mNameTV.getText())), 1, true);
+				toActivity(EditTextInfoActivity.createIntent(context, EditTextInfoActivity.TYPE_NICK, "设置昵称", StringUtil.getTrimedString(mNickNameTV.getText())), 1, true);
 				break;
 			case R.id.llPersonProofs:
 				toActivity(ProofListActivity.createIntent(context, ProofListActivity.RANGE_RECOMMEND));
@@ -178,8 +186,16 @@ public class SettingFragment extends BaseFragment implements OnClickListener, On
 
 		if (requestCode == 1 && resultCode == RESULT_OK) {
 			String result = data.getStringExtra(EditTextInfoActivity.RESULT_VALUE);
-			mNameTV.setText(result);
-			//todo:: change name request
+			mNickNameTV.setText(result);
+			DataManager.getInstance().setCurrentUserNickname(result);
+
+			//change name request
+			HttpRequest.setNickname(result, 1, new OnHttpResponseListener() {
+				@Override
+				public void onHttpResponse(int requestCode, String resultJson, Exception e) {
+					Log.e(TAG, "Set Nickname: " + resultJson);
+				}
+			});
 
 		}
 	}

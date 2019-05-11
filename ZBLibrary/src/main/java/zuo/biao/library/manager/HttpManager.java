@@ -17,6 +17,8 @@ package zuo.biao.library.manager;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -27,11 +29,14 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLSocketFactory;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
 import okhttp3.MediaType;
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -39,6 +44,7 @@ import okhttp3.Response;
 import zuo.biao.library.base.BaseApplication;
 import zuo.biao.library.interfaces.OnHttpResponseListener;
 import zuo.biao.library.model.Parameter;
+import zuo.biao.library.util.CommonUtil;
 import zuo.biao.library.util.JSON;
 import zuo.biao.library.util.Log;
 import zuo.biao.library.util.SSLUtil;
@@ -235,6 +241,133 @@ public class HttpManager {
 							client,
 							new Request.Builder()
                                     .url(url)
+									.post(requestBody)
+									.build()
+					);
+					Log.d(TAG, "\n post  result = \n" + result + "\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n");
+				} catch (Exception e) {
+					Log.e(TAG, "post  AsyncTask.doInBackground  try {  result = getResponseJson(..." +
+							"} catch (Exception e) {\n" + e.getMessage());
+					return e;
+				}
+
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Exception exception) {
+				super.onPostExecute(exception);
+				listener.onHttpResponse(requestCode, result, exception);
+			}
+
+		}.execute();
+	}
+
+	/**POST请求
+	 * @param request 请求
+	 * @param url 网络地址
+	 * @param requestCode
+	 *            请求码，类似onActivityResult中请求码，当同一activity中以实现接口方式发起多个网络请求时，请求结束后都会回调
+	 *            {@link OnHttpResponseListener#onHttpResponse(int, String, Exception)}<br/>
+	 *            在发起请求的类中可以用requestCode来区分各个请求
+	 * @param listener
+	 */
+	public void postFile(final Map<String, Object> request, final File file, final String url,
+						 final int requestCode, final OnHttpResponseListener listener) {
+		String result = "";
+		try {
+			OkHttpClient client = getHttpClient(url);
+
+			Request.Builder rb = new Request.Builder();
+			rb.url(url);
+
+			MultipartBody.Builder mb = new MultipartBody.Builder();
+			mb.setType(MultipartBody.FORM);
+			Set<Map.Entry<String, Object>> set = request == null ? null : request.entrySet();
+			if (set != null) {
+				for (Map.Entry<String, Object> entry : set) {
+					mb.addFormDataPart(StringUtil.trim(entry.getKey()), StringUtil.trim(entry.getValue()));
+				}
+			}
+
+			Log.e(TAG, "Post  MIME: " + MediaType.parse(CommonUtil.getMIMEType(file)));
+			mb.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse(CommonUtil.getMIMEType(file)), file));
+
+			rb.post(mb.build());
+
+			client.newCall(rb.build()).enqueue(new Callback() {
+				@Override
+				public void onFailure(Call call, IOException e) {
+
+					Log.e(TAG, "Post Failure: " + e.toString());
+				}
+
+				@Override
+				public void onResponse(Call call, Response response) throws IOException {
+					try {
+						String httpResponse = response.body().string();
+						listener.onHttpResponse(requestCode, httpResponse, null);
+					} catch (Exception e) {
+						listener.onHttpResponse(requestCode, "", e);
+					}
+				}
+			});
+
+
+			Log.d(TAG, "\n post  result = \n" + result + "\n >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n\n");
+		} catch (Exception e) {
+			Log.e(TAG, "post  AsyncTask.doInBackground  try {  result = getResponseJson(..." +
+					"} catch (Exception e) {\n" + e.getMessage());
+		}
+
+
+
+
+	}
+
+	/**POST请求
+	 * @param request 请求
+	 * @param url 网络地址
+	 * @param requestCode
+	 *            请求码，类似onActivityResult中请求码，当同一activity中以实现接口方式发起多个网络请求时，请求结束后都会回调
+	 *            {@link OnHttpResponseListener#onHttpResponse(int, String, Exception)}<br/>
+	 *            在发起请求的类中可以用requestCode来区分各个请求
+	 * @param listener
+	 */
+	public void postFile2(final Map<String, Object> request, final File file, final String url,
+							final int requestCode, final OnHttpResponseListener listener) {
+		new AsyncTask<Void, Void, Exception>() {
+
+			String result;
+			@Override
+			protected Exception doInBackground(Void... params) {
+
+				try {
+					OkHttpClient client = getHttpClient(url);
+					if (client == null) {
+						return new Exception(TAG + ".post  AsyncTask.doInBackground  client == null >> return;");
+					}
+
+					RequestBody requestBody;
+
+					MultipartBody.Builder mb = new MultipartBody.Builder();
+					mb.setType(MultipartBody.FORM);
+					Set<Map.Entry<String, Object>> set = request == null ? null : request.entrySet();
+					if (set != null) {
+						for (Map.Entry<String, Object> entry : set) {
+							mb.addFormDataPart(StringUtil.trim(entry.getKey()), StringUtil.trim(entry.getValue()));
+						}
+					}
+
+					Log.e(TAG, "Post  MIME: " + MediaType.parse(CommonUtil.getMIMEType(file)));
+					mb.addFormDataPart("file", file.getName(), RequestBody.create(MediaType.parse(CommonUtil.getMIMEType(file)), file));
+
+					requestBody = mb.build();
+
+					result = getResponseJson(
+							client,
+							new Request.Builder()
+									.url(url)
 									.post(requestBody)
 									.build()
 					);

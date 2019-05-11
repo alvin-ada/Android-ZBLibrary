@@ -15,9 +15,15 @@ limitations under the License.*/
 package zblibrary.xscan.activity;
 
 import zblibrary.xscan.R;
+import zblibrary.xscan.application.DemoApplication;
+import zblibrary.xscan.model.User;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
+
+import org.w3c.dom.Text;
 
 /**闪屏activity，保证点击桌面应用图标后无延时响应
  * @author Lemon
@@ -34,7 +40,13 @@ public class SplashActivity extends Activity {
 			@Override
 			public void run() {
 //				startActivity(AboutActivity.createIntent(SplashActivity.this));
-				startActivity(MainTabActivity.createIntent(SplashActivity.this));
+
+				User user = DemoApplication.getInstance().getCurrentUser();
+				if (null != user && user.getUid() > 0 && !TextUtils.isEmpty(user.getToken())) {
+					startActivity(MainTabActivity.createIntent(SplashActivity.this));
+				} else {
+					startActivity(LoginActivity.createIntent(SplashActivity.this));
+				}
 				finish();
 			}
 		}, 500);

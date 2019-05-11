@@ -21,6 +21,9 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.alibaba.fastjson.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 import zblibrary.xscan.R;
@@ -28,6 +31,7 @@ import zblibrary.xscan.adapter.ProofAdapter;
 import zblibrary.xscan.adapter.UserAdapter;
 import zblibrary.xscan.model.Proof;
 import zblibrary.xscan.model.Proof;
+import zblibrary.xscan.model.User;
 import zblibrary.xscan.util.HttpRequest;
 import zblibrary.xscan.util.TestUtil;
 import zblibrary.xscan.view.ProofView;
@@ -35,6 +39,7 @@ import zblibrary.xscan.view.UserView;
 import zuo.biao.library.base.BaseHttpRecyclerActivity;
 import zuo.biao.library.interfaces.AdapterCallBack;
 import zuo.biao.library.interfaces.OnBottomDragListener;
+import zuo.biao.library.interfaces.OnHttpResponseListener;
 import zuo.biao.library.util.JSON;
 
 
@@ -139,21 +144,28 @@ public class ProofListActivity extends BaseHttpRecyclerActivity<Proof, ProofView
 	@Override
 	public void getListAsync(final int page) {
 		//实际使用时用这个，需要配置服务器地址		HttpRequest.getUserList(range, page, -page, this);
+		HttpRequest.getProofList(page, 1, this);
 
-		//仅测试用<<<<<<<<<<<
-		new Handler().postDelayed(new Runnable() {
-
-			@Override
-			public void run() {
-				onHttpResponse(-page, page >= 5 ? null : JSON.toJSONString(TestUtil.getProofList()), null);
-			}
-		}, 1000);
-		//仅测试用>>>>>>>>>>>>
+//		//仅测试用<<<<<<<<<<<
+//		new Handler().postDelayed(new Runnable() {
+//
+//			@Override
+//			public void run() {
+//				onHttpResponse(-page, page >= 5 ? null : JSON.toJSONString(TestUtil.getProofList()), null);
+//			}
+//		}, 1000);
+//		//仅测试用>>>>>>>>>>>>
 	}
 
 	@Override
 	public List<Proof> parseArray(String json) {
-		return JSON.parseArray(json, Proof.class);
+		JSONObject jsonObject = JSON.parseObject(json);
+		JSONObject data = jsonObject == null ? null : jsonObject.getJSONObject("data");
+		if (null != data) {
+			return JSON.parseArray(data.getString("list"), Proof.class);
+		} else {
+			return new ArrayList<Proof>();
+		}
 	}
 
 

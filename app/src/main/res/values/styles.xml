@@ -28,6 +28,13 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+    <style name="LoginTheme" parent="android:Theme.NoTitleBar.Fullscreen">
+
+        <!-- 登录背景，可用图片 -->
+        <item name="android:windowBackground">@drawable/splash</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
     <style name="bottom_tab_ll" parent="ll_vertical_match_match">
         <item name="android:width">0dp</item>
     </style>

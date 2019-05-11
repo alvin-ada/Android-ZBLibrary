@@ -36,6 +36,7 @@ public class User extends BaseModel {
 
 	//xScan identify
 	private int uid;
+	private String nickname;
 	private String token;
 
 	/**默认构造方法，JSON等解析时必须要有
@@ -103,6 +104,14 @@ public class User extends BaseModel {
 
 	public void setUid(int uid) {
 		this.uid = uid;
+	}
+
+	public String getNickname() {
+		return nickname;
+	}
+
+	public void setNickname(String nickname) {
+		this.nickname = nickname;
 	}
 
 	public String getToken() {
