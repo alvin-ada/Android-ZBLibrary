@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import zblibrary.xscan.adapter.ProofAdapter;
 import zblibrary.xscan.adapter.UserAdapter;
 import zblibrary.xscan.model.Proof;
 import zblibrary.xscan.model.Proof;
+import zblibrary.xscan.model.ProofListResult;
 import zblibrary.xscan.model.User;
 import zblibrary.xscan.util.HttpRequest;
 import zblibrary.xscan.util.TestUtil;
@@ -40,7 +42,6 @@ import zuo.biao.library.base.BaseHttpRecyclerActivity;
 import zuo.biao.library.interfaces.AdapterCallBack;
 import zuo.biao.library.interfaces.OnBottomDragListener;
 import zuo.biao.library.interfaces.OnHttpResponseListener;
-import zuo.biao.library.util.JSON;
 
 
 /** 使用方法：复制>粘贴>改名>改代码 */
@@ -157,15 +158,36 @@ public class ProofListActivity extends BaseHttpRecyclerActivity<Proof, ProofView
 //		//仅测试用>>>>>>>>>>>>
 	}
 
+	public static final class ProofTest {
+		public String create_at;
+		public int updatedat;
+		public long mtime;
+	}
+
 	@Override
 	public List<Proof> parseArray(String json) {
-		JSONObject jsonObject = JSON.parseObject(json);
-		JSONObject data = jsonObject == null ? null : jsonObject.getJSONObject("data");
-		if (null != data) {
-			return JSON.parseArray(data.getString("list"), Proof.class);
-		} else {
-			return new ArrayList<Proof>();
+//		JSONObject jsonObject = JSON.parseObject(json);
+//		JSONObject data = jsonObject == null ? null : jsonObject.getJSONObject("data");
+//		if (null != data) {
+//			return com.alibaba.fastjson.JSON.parseArray(data.getString("list"), Proof.class);
+//		} else {
+//			return new ArrayList<Proof>();
+//		}
+
+		String pjson = "{\"id\":6,\"uid\":3,\"local_hk\":\"5d8740149e0047d29eaea4d6bd1b2ec3aacf72f9\",\"remote_hk\":null,\"result\":0,\"updatedat\":1557585776,\"created_at\":1557585776,\"mtime\":1557585776}";
+		ProofTest p = JSON.parseObject(pjson, ProofTest.class);
+
+
+
+
+		List<Proof> list = new ArrayList<>();
+		ProofListResult plr = JSON.parseObject(json, ProofListResult.class);
+
+		if (null != plr && null != plr.data && null != plr.data.list) {
+			return plr.data.list;
 		}
+
+		return list;
 	}
 
 

@@ -98,34 +98,34 @@ public class TestUtil {
 	}
 
 
-	public static List<Proof> getProofList() {
-		return getProofList(0);
-	}
-	/**
-	 * @param page 页码
-	 * @return
-	 */
-	public static List<Proof> getProofList(int page) {
-		return getProofList(page, 10);
-	}
-	/**
-	 * @param page 页码
-	 * @param count 最大一页数量
-	 * @return
-	 */
-	public static List<Proof> getProofList(int page, int count) {
-		List<Proof> list = new ArrayList<Proof>();
-		int result;
-		long create_at;
-		Proof proof;
-		int index;
-		for (int i = 0; i < count ; i++) {
-
-			proof = new Proof();
-			proof.setResult(i % 3);
-			proof.setCreateAt(System.currentTimeMillis());
-			list.add(proof);
-		}
-		return list;
-	}
+//	public static List<Proof> getProofList() {
+//		return getProofList(0);
+//	}
+//	/**
+//	 * @param page 页码
+//	 * @return
+//	 */
+//	public static List<Proof> getProofList(int page) {
+//		return getProofList(page, 10);
+//	}
+//	/**
+//	 * @param page 页码
+//	 * @param count 最大一页数量
+//	 * @return
+//	 */
+//	public static List<Proof> getProofList(int page, int count) {
+//		List<Proof> list = new ArrayList<Proof>();
+//		int result;
+//		long create_at;
+//		Proof proof;
+//		int index;
+//		for (int i = 0; i < count ; i++) {
+//
+//			proof = new Proof();
+//			proof.setResult(i % 3);
+//			proof.setCreateAt(System.currentTimeMillis());
+//			list.add(proof);
+//		}
+//		return list;
+//	}
 }

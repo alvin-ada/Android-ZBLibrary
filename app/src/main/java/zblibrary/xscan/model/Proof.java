@@ -30,10 +30,12 @@ public class Proof extends BaseModel {
     public final static int RESULT_TRUE = 1;
     public final static int RESULT_FALSE = 2;
 
-
-    public int result; //0.尚未结果, 1.真. 2.假
-    public long create_at; //"created_at": 1557021811
-
+    private int result; //0.尚未结果, 1.真. 2.假
+    private long created_at; //"created_at": 1557021811
+    private int uid;
+    private String local_hk;
+    private String remote_hk;
+    private int updated_at;
 
     /**
      * 默认构造方法，JSON等解析时必须要有
@@ -47,12 +49,11 @@ public class Proof extends BaseModel {
         this.id = id;
     }
 
-    public Proof(long id, int result, int create_at) {
+    public Proof(long id, int result, int created_at) {
         this(id);
         this.result = result;
-        this.create_at = create_at;
+        this.created_at = created_at;
     }
-
 
     /**
      * 以下getter和setter可以自动生成
@@ -84,21 +85,52 @@ public class Proof extends BaseModel {
     }
 
     public String getCreateAtStr() {
-        return AppUtils.getDateTimeStr(create_at, "yyyy-MM-dd HH:mm:ss");
+        return AppUtils.getDateTimeStr(created_at * 1000, "yyyy-MM-dd HH:mm:ss");
     }
 
-    public long getCreateAt() {
-        return create_at;
+    public long getCreated_at() {
+        return created_at;
     }
 
-    public void setCreateAt(long create_at) {
-        this.create_at = create_at;
+    public void setCreated_at(long created_at) {
+        this.created_at = created_at;
     }
 
+    public int getUid() {
+        return uid;
+    }
+
+    public void setUid(int uid) {
+        this.uid = uid;
+    }
+
+    public String getLocal_hk() {
+        return local_hk;
+    }
+
+    public void setLocal_hk(String local_hk) {
+        this.local_hk = local_hk;
+    }
+
+    public String getRemote_hk() {
+        return remote_hk;
+    }
+
+    public void setRemote_hk(String remote_hk) {
+        this.remote_hk = remote_hk;
+    }
+
+    public int getUpdate_at() {
+        return updated_at;
+    }
+
+    public void setUpdate_at(int update_at) {
+        this.updated_at = update_at;
+    }
 
     @Override
     protected boolean isCorrect() {//根据自己的需求决定，也可以直接 return true
-        return create_at > 0;// && StringUtil.isNotEmpty(phone, true);
+        return created_at > 0;// && StringUtil.isNotEmpty(phone, true);
     }
 
 }

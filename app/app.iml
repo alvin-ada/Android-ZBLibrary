@@ -161,5 +161,7 @@
     <orderEntry type="library" name="Gradle: com.github.bumptech.glide:gifdecoder:4.8.0@aar" level="project" />
     <orderEntry type="module" module-name="ZBLibrary" />
     <orderEntry type="module" module-name="QRCodeLibrary" />
+    <orderEntry type="module" module-name="ZBLibrary" />
+    <orderEntry type="module" module-name="QRCodeLibrary" />
   </component>
 </module>

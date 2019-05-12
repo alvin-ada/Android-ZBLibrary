@@ -16,6 +16,7 @@ package zblibrary.xscan.adapter;
 
 import android.app.Activity;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import zblibrary.xscan.model.Proof;
 import zblibrary.xscan.model.User;
@@ -24,7 +25,6 @@ import zblibrary.xscan.view.UserView;
 import zuo.biao.library.base.BaseAdapter;
 
 /**用户adapter
- * @author Lemon
  */
 public class ProofAdapter extends BaseAdapter<Proof, ProofView> {
 	//	private static final String TAG = "UserAdapter";
@@ -36,6 +36,11 @@ public class ProofAdapter extends BaseAdapter<Proof, ProofView> {
 	@Override
 	public ProofView createView(int position, ViewGroup parent) {
 		return new ProofView(context, parent);
+	}
+
+	@Override
+	public BaseAdapter<Proof, ProofView> setOnItemClickListener(AdapterView.OnItemClickListener onItemClickListener) {
+		return null;
 	}
 
 	@Override
