@@ -272,7 +272,7 @@ public class HttpManager {
 	 *            在发起请求的类中可以用requestCode来区分各个请求
 	 * @param listener
 	 */
-	public void postFile(final Map<String, Object> request, final File file, final String url,
+	public void postFile3(final Map<String, Object> request, final File file, final String url,
 						 final int requestCode, final OnHttpResponseListener listener) {
 		String result = "";
 		try {
@@ -334,7 +334,7 @@ public class HttpManager {
 	 *            在发起请求的类中可以用requestCode来区分各个请求
 	 * @param listener
 	 */
-	public void postFile2(final Map<String, Object> request, final File file, final String url,
+	public void postFile(final Map<String, Object> request, final File file, final String url,
 							final int requestCode, final OnHttpResponseListener listener) {
 		new AsyncTask<Void, Void, Exception>() {
 

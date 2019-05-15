@@ -41,7 +41,7 @@ public class HttpRequest {
 
 	/**基础URL，这里服务器设置可切换*/
 	public static final String URL_BASE = SettingUtil.getCurrentServerAddress();
-	public static final String PAGE_NUM = "pageNum";
+	public static final String PAGE_NUM = "page";
 
 
 	//示例代码<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

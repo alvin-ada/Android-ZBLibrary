@@ -166,28 +166,13 @@ public class ProofListActivity extends BaseHttpRecyclerActivity<Proof, ProofView
 
 	@Override
 	public List<Proof> parseArray(String json) {
-//		JSONObject jsonObject = JSON.parseObject(json);
-//		JSONObject data = jsonObject == null ? null : jsonObject.getJSONObject("data");
-//		if (null != data) {
-//			return com.alibaba.fastjson.JSON.parseArray(data.getString("list"), Proof.class);
-//		} else {
-//			return new ArrayList<Proof>();
-//		}
-
-		String pjson = "{\"id\":6,\"uid\":3,\"local_hk\":\"5d8740149e0047d29eaea4d6bd1b2ec3aacf72f9\",\"remote_hk\":null,\"result\":0,\"updatedat\":1557585776,\"created_at\":1557585776,\"mtime\":1557585776}";
-		ProofTest p = JSON.parseObject(pjson, ProofTest.class);
-
-
-
-
-		List<Proof> list = new ArrayList<>();
-		ProofListResult plr = JSON.parseObject(json, ProofListResult.class);
-
-		if (null != plr && null != plr.data && null != plr.data.list) {
-			return plr.data.list;
+		JSONObject jsonObject = JSON.parseObject(json);
+		JSONObject data = jsonObject == null ? null : jsonObject.getJSONObject("data");
+		if (null != data) {
+			return com.alibaba.fastjson.JSON.parseArray(data.getString("list"), Proof.class);
+		} else {
+			return new ArrayList<Proof>();
 		}
-
-		return list;
 	}
 
 
